@@ -43,7 +43,7 @@ setup(
         'Operating System :: POSIX :: Linux'
     ],
 
-    packages=['brbrowse'],
+    packages=['btbrowse'],
 
     package_data={
         'btbrowse': [
