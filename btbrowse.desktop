@@ -4,7 +4,7 @@ Comment=Open bittorrent files or magnet links as a folder in your file manager.
 Exec=btbrowse %U
 Icon=btbrowse
 MimeType=application/x-bittorrent;x-scheme-handler/magnet;
-StartupNotify=true
+StartupNotify=false
 Categories=Network;Utility;FileTransfer;P2P;
 Type=Application
 
