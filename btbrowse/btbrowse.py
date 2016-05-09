@@ -53,7 +53,7 @@ def open_torrent_url(url):
     query_params = parse_qs(url_parsed.query)
     
     magnet_params = {}
-    if query_params['tr']:
+    if 'tr' in query_params:
       magnet_params['tr'] = query_params['tr']
     
     if magnet_params:
