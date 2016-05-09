@@ -2,8 +2,8 @@
 # Directory to mount torrents in
 # torrent_dir = "~/.cache/btbrowse"
 
-# If false, download the entire torrent contents automatically, otherwise only download files when they are opened
-# browse_only = true
+# If true, download only the metadata, otherwise download the entire torrent contents automatically
+# browse_only = false
 
 # Torrents will self-distruct after this many hours
 # hours_to_live = 12

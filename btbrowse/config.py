@@ -36,7 +36,7 @@ except KeyError:
 try:
     browse_only = settings['browse_only']
 except KeyError:
-    browse_only = True
+    browse_only = False
 
 try:
     hours_to_live = settings['hours_to_live']
