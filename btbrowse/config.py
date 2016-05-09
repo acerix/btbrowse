@@ -25,10 +25,23 @@ if not os.path.isfile(config_file):
 with open(config_file) as config_file_object:
     settings = pytoml.load(config_file_object)
 
+
+# load config settings or defaults
+
 try:
     torrent_dir = settings['torrent_dir']
 except KeyError:
     torrent_dir = cache_dir
+
+try:
+    browse_only = settings['browse_only']
+except KeyError:
+    browse_only = True
+
+try:
+    hours_to_live = settings['hours_to_live']
+except KeyError:
+    hours_to_live = 12
 
 
 # copy version number to settings

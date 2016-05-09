@@ -123,8 +123,14 @@ def open_torrent_btih(btih, url):
   if not os.path.isdir(mount_dir):
 
     os.mkdir(mount_dir)
-
-    btfs_return_code = subprocess.call(['btfs', url, mount_dir])
+    
+    btfs_params = ['btfs']
+    if (config.browse_only):
+      btfs_params.append('-b')
+    btfs_params.append(url)
+    btfs_params.append(mount_dir)
+    
+    btfs_return_code = subprocess.call(btfs_params)
 
     if btfs_return_code:
       print('btfs error', btfs_return_code)
@@ -138,10 +144,10 @@ def open_torrent_btih(btih, url):
 
   if open_return_code == 0:
     
-    # Keep the torrent for 6 hours
-    # @todo check if any files are still open
-    time.sleep(60 * 60 * 6)
-    
+    # Keep the torrent for the specified number of hours
+    time.sleep(3600 * config.hours_to_live)
+  
+  # Self-destruct
   close_torrent_btih(btih)
   
 
