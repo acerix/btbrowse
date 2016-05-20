@@ -44,8 +44,7 @@ except KeyError:
     hours_to_live = 12
 
 
-# copy version number to settings
+# copy version number and app name to settings
 
 from version import __version__
 settings['version'] = __version__
-

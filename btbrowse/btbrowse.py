@@ -3,7 +3,9 @@
 import config
 
 from tkinter import *
+import tkinter.ttk as ttk
 from urllib.parse import urlparse, parse_qs, urlencode
+from datetime import datetime, timedelta
 import urllib.request
 import os
 import re
@@ -15,20 +17,35 @@ import bencodepy
 import base64
 import codecs
 
+gui_mode = 'DISPLAY' in os.environ
 
 def main():
-
-  # Prompt for torrent URL if not provided
-  if len(sys.argv) < 2:        
-    master = Tk()
-    Label(master, text='Torrent URL').grid(row=0)
-    url_entry = Entry(master)
-    url_entry.grid(row=0, column=1)
-    Button(master, text='Open', command=master.quit).grid(row=2, column=0, sticky=W, pady=4)
-    mainloop()    
-    url = url_entry.get()
-    master.destroy()
   
+  # Prompt for torrent URL if not provided
+  if len(sys.argv) < 2:
+
+    # If there's a display, try a GUI popup
+    if gui_mode:
+      try:
+        master = Tk()
+        master.wm_title(config.app_name)
+        Label(master, text='Torrent URL: ').grid(row=0)
+        url_entry = Entry(master)
+        url_entry.grid(row=0, column=1)
+        Button(master, text='Open', command=master.quit).grid(row=2, column=0, sticky=W, pady=4)
+        url_entry.focus_set()
+        mainloop()
+        url = url_entry.get()
+        master.destroy()
+      except:
+        print('Torrent URL is required')
+        return
+
+    # Otherwise console prompt
+    else:
+      print(config.app_name + ': usage: ' + config.app_name + ' [options] torrent_url')
+      return
+
   # URL is first arg
   else:
     url = sys.argv[1]
@@ -107,7 +124,7 @@ def open_torrent_url(url):
     return
   
   
-  print('URL not supported', url)
+  print('Torrent URL is not supported')
   
     
 
@@ -139,17 +156,60 @@ def open_torrent_btih(btih, url):
   # Wait for metadata to download
   while not os.listdir(mount_dir):
     time.sleep(0.1)
-  
-  open_return_code = subprocess.call(['xdg-open', mount_dir])
 
-  if open_return_code == 0:
     
+  open_success = False
+    
+  if gui_mode:
+    # Open in file browser
+    open_return_code = subprocess.call(['xdg-open', mount_dir])
+      
+    if open_return_code == 0:
+      open_success = True
+    else:
+      print('Error ' + open_return_code + ' opening file browser')
+      
+  else:
+    # Console
+    print('Mounted to ' + mount_dir)
+    open_success = True
+
+
+  if open_success:
+
+    destroy_immediately = False
+
+    # If there's a display, show progress screen
+    if gui_mode:
+      try:
+        master = Tk()
+        master.wm_title(config.app_name + ' ' + btih)
+        Label(master, text='Downloading ' + btih).grid(row=0)
+        
+        #progress_bar = ttk.Progressbar(master, orient='horizontal', length=200, mode='determinate')
+        #progress_bar.pack()
+
+        Button(master, text='Self-destruct', command=master.quit).grid(row=2, column=0, sticky=W, pady=4)
+        mainloop()
+        master.destroy()
+        destroy_immediately = True
+      except:
+        print('Error in progress GUI', sys.exc_info())
+
     # Keep the torrent for the specified number of hours
-    time.sleep(3600 * config.hours_to_live)
+    if not destroy_immediately:
+      print('Torrent will self-destruct at ' + '{:%H:%M}'.format( datetime.now() + timedelta(hours=config.hours_to_live) ))
+      try:
+        time.sleep(3600 * config.hours_to_live)
+      except:
+        print('Interrupted')
+
+
+  print('Destructing torrent...')	
   
   # Self-destruct
   close_torrent_btih(btih)
-  
+
 
 
 def close_torrent_btih(btih):
